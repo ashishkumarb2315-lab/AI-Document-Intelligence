@@ -1,7 +1,10 @@
+import os
 import ollama
+from openai import OpenAI
 
 
 MODEL_NAME = "llama3.2:3b"
+OPENAI_MODEL = "gpt-5.6-mini"
 
 
 def generate_answer(question, context):
@@ -40,6 +43,21 @@ STRICT RULES:
 
 ANSWER:
 """
+
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    if api_key:
+
+        client = OpenAI(
+            api_key=api_key
+        )
+
+        response = client.responses.create(
+            model=OPENAI_MODEL,
+            input=prompt
+        )
+
+        return response.output_text
 
     response = ollama.chat(
         model=MODEL_NAME,
