@@ -79,7 +79,7 @@ def store_chunks(chunks, embeddings):
 
 def search_chunks(
     query_embedding,
-    top_k=10,
+    top_k=15,
     max_distance=1.2
 ):
 

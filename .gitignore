@@ -1,7 +1,9 @@
 venv/
 venv311/
 venv312/
-__pycache__/
+venv-test/
+
+**pycache**/
 *.pyc
 
 data/faiss_db/
@@ -10,5 +12,7 @@ data/chroma_debug/
 data/chroma_test/
 data/chroma_test311/
 data/chroma_test_db/
+
+data/documents/
 
 .env

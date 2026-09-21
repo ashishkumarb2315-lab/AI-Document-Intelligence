@@ -1,58 +1,84 @@
 # 📄 AI Document Intelligence
 
-An AI-powered document question-answering application that allows users to upload PDF documents and ask questions using natural language.
+An AI-powered **Retrieval-Augmented Generation (RAG)** application that allows users to upload PDF documents and ask questions about their content.
 
-The application uses **Retrieval-Augmented Generation (RAG)** to retrieve relevant information from documents and generate answers using a local Large Language Model.
+The application extracts text from PDFs, splits the content into chunks, generates embeddings, stores them in a FAISS vector database, retrieves relevant information, and uses a local LLM through Ollama to generate answers.
+
+---
 
 ## 🚀 Features
 
 * 📄 Upload PDF documents
+* 📚 Support multiple PDF documents
+* 🔍 Extract text from PDF files
 * ✂️ Split documents into smaller chunks
-* 🧠 Generate semantic embeddings using Sentence Transformers
-* 🔎 Perform similarity search using FAISS
-* 🤖 Generate answers using Ollama and Llama 3.2
-* 💬 Interactive Streamlit web interface
-* 📚 Support for multiple documents
-* 📌 Display source document and page number
-* 🧪 Unit tests for core components
-* 🔒 Runs locally without requiring an external LLM API
+* 🧠 Generate text embeddings using Sentence Transformers
+* ⚡ Store and search embeddings using FAISS
+* 🤖 Generate answers using a local LLM with Ollama
+* 💬 Interactive Streamlit interface
+* 📝 Chat history
+* 🧹 Clear Chat functionality
+* 📑 Display source document and page numbers
+* 🛡️ Answer only using information available in the documents
+* ❌ Return a fallback message when information is not available
+
+---
 
 ## 🏗️ Architecture
 
 ```text
 PDF Documents
-      ↓
-Document Loader
-      ↓
-Text Chunking
-      ↓
+      │
+      ▼
+PDF Text Extraction
+      │
+      ▼
+Document Chunking
+      │
+      ▼
 Sentence Transformer Embeddings
-      ↓
-FAISS Vector Store
-      ↓
+      │
+      ▼
+FAISS Vector Database
+      │
+      ▼
+User Question
+      │
+      ▼
+Question Embedding
+      │
+      ▼
 Similarity Search
-      ↓
-Relevant Document Context
-      ↓
-Ollama / Llama 3.2
-      ↓
+      │
+      ▼
+Relevant Document Chunks
+      │
+      ▼
+Ollama LLM
+      │
+      ▼
 Generated Answer
-      ↓
+      │
+      ▼
 Streamlit UI
 ```
 
-## 🛠️ Technologies Used
+---
 
-* Python
+## 🛠️ Technologies
+
+* Python 3.11
 * Streamlit
-* FAISS
-* Sentence Transformers
 * PyMuPDF
 * LangChain Text Splitters
-* Ollama
-* Llama 3.2
+* Sentence Transformers
+* FAISS
 * NumPy
 * PyTorch
+* Ollama
+* Llama 3.2 3B
+
+---
 
 ## 📁 Project Structure
 
@@ -60,14 +86,16 @@ Streamlit UI
 AI-Document-Intelligence/
 │
 ├── data/
-│   └── documents/
+│   ├── documents/
+│   └── faiss_db/
 │
 ├── src/
 │   ├── chunker.py
 │   ├── document_loader.py
 │   ├── embeddings.py
+│   ├── vector_store.py
 │   ├── llm.py
-│   └── vector_store.py
+│   └── __init__.py
 │
 ├── tests/
 │   ├── test_chunking.py
@@ -80,129 +108,212 @@ AI-Document-Intelligence/
 ├── streamlit_app.py
 ├── test_pdf.py
 ├── test_retrieval.py
-├── .gitignore
-└── README.md
+├── requirements.txt
+├── README.md
+└── .gitignore
 ```
 
-## ⚙️ Installation
+---
 
-### 1. Clone the repository
+# ⚙️ Installation
+
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/ashishkumarb2315-lab/AI-Document-Intelligence.git
 ```
 
-### 2. Open the project folder
-
 ```bash
 cd AI-Document-Intelligence
 ```
 
-### 3. Create a virtual environment
+---
 
-```bash
-python -m venv venv
+## 2. Python Version
+
+This project requires **Python 3.11.x**.
+
+Python 3.11 is recommended because the project uses **PyTorch 2.5.1**, which is compatible with this Python version.
+
+Python 3.14 is not supported by the current dependency configuration.
+
+---
+
+## 3. Create a Virtual Environment
+
+### Windows
+
+```powershell
+py -3.11 -m venv venv
 ```
 
-### 4. Activate the virtual environment
-
-For Windows PowerShell:
+Activate the environment:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-### 5. Install Python dependencies
+### Linux / macOS
 
-```powershell
-pip install -r requirements.txt
+```bash
+python3.11 -m venv venv
 ```
 
-## 🤖 Install Ollama
+Activate:
 
-Install Ollama on your computer.
+```bash
+source venv/bin/activate
+```
 
-Then download the Llama 3.2 model:
+---
 
-```powershell
+## 4. Install Dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+---
+
+# 🤖 Ollama Setup
+
+This project uses Ollama to run the local LLM.
+
+Install Ollama on your system and make sure it is running.
+
+Then download the required model:
+
+```bash
 ollama pull llama3.2:3b
 ```
 
-Make sure Ollama is running before starting the application.
+Verify that the model is available:
 
-## 📄 Add Documents
+```bash
+ollama list
+```
 
-Place your PDF files inside:
+You should see:
+
+```text
+llama3.2:3b
+```
+
+---
+
+# 📚 Add Documents
+
+Create the following folder if it does not already exist:
 
 ```text
 data/documents/
 ```
 
-The application will read the PDF files, extract their text, split the text into chunks, and prepare them for semantic search.
+Place your PDF files inside this folder.
 
-## 🧠 Build the FAISS Index
+Example:
 
-Run:
+```text
+data/
+└── documents/
+    ├── document1.pdf
+    ├── document2.pdf
+    └── document3.pdf
+```
 
-```powershell
+The PDF documents are intentionally excluded from GitHub because users can provide their own documents.
+
+---
+
+# 🧠 Build the FAISS Index
+
+After adding your PDF files, run:
+
+```bash
 python build_index.py
 ```
 
-This will:
+This process will:
 
-1. Find the PDF documents.
-2. Extract text from the PDFs.
-3. Split the text into chunks.
-4. Generate embeddings.
-5. Store the embeddings in FAISS.
+1. Find PDF documents
+2. Extract PDF text
+3. Split the text into chunks
+4. Generate embeddings
+5. Store the embeddings in FAISS
+6. Store document metadata
 
-## ▶️ Run the Streamlit Application
+The generated FAISS files are stored locally in:
 
-Run:
+```text
+data/faiss_db/
+```
 
-```powershell
+---
+
+# ▶️ Run the Streamlit Application
+
+Start the application with:
+
+```bash
 streamlit run streamlit_app.py
 ```
 
-Then open the URL displayed in the terminal, usually:
+The application will open in your browser.
 
-```text
-http://localhost:8501
-```
+You can then:
 
-The application will open in your web browser.
+1. Upload a PDF
+2. Process the PDF
+3. Ask questions
+4. View the generated answer
+5. View source documents and page numbers
+6. Continue the conversation using chat history
 
-## 💬 Example Questions
+---
 
-You can ask questions such as:
+# 💡 Example Questions
 
-```text
-What is supervised learning?
-```
+For a machine learning document:
 
 ```text
 What are the types of machine learning?
 ```
 
 ```text
+What is supervised learning?
+```
+
+```text
+What is the difference between supervised and unsupervised learning?
+```
+
+For a database document:
+
+```text
 What is a database management system?
 ```
 
-The application retrieves relevant document content and uses that context to generate the answer.
+```text
+What are the advantages of DBMS?
+```
 
-## 🔍 How RAG Works in This Project
+The system answers questions using information retrieved from the uploaded documents.
 
-The application follows a Retrieval-Augmented Generation workflow.
+---
 
-### 1. Document Loading
+# 🔎 How RAG Works
 
-PDF documents are loaded using PyMuPDF.
+This project follows a Retrieval-Augmented Generation workflow.
 
-### 2. Chunking
+### Step 1 — Document Loading
 
-Large document text is divided into smaller chunks using a recursive text splitter.
+PDF documents are read using PyMuPDF.
 
-### 3. Embedding Generation
+### Step 2 — Chunking
+
+Large documents are divided into smaller text chunks using the LangChain text splitter.
+
+### Step 3 — Embeddings
 
 Each chunk is converted into a numerical vector using:
 
@@ -210,63 +321,116 @@ Each chunk is converted into a numerical vector using:
 all-MiniLM-L6-v2
 ```
 
-### 4. Vector Storage
+### Step 4 — Vector Storage
 
-The embeddings are stored in a FAISS vector index.
+The embeddings are stored in a FAISS vector database.
 
-### 5. Retrieval
+### Step 5 — Question Embedding
 
-When the user asks a question, the question is converted into an embedding and compared with the stored document vectors.
+When the user asks a question, the question is converted into an embedding.
 
-### 6. Context Generation
+### Step 6 — Similarity Search
 
-The most relevant document chunks are retrieved.
+FAISS searches for the most relevant document chunks.
 
-### 7. Answer Generation
+### Step 7 — Answer Generation
 
-The retrieved context is provided to the local Llama 3.2 model through Ollama.
+The retrieved context is provided to the local:
 
-### 8. User Interface
+```text
+llama3.2:3b
+```
 
-The final answer is displayed through Streamlit along with the relevant document sources.
+model through Ollama.
 
-## 🧪 Testing
+### Step 8 — Response
+
+The generated answer is displayed in the Streamlit application together with source document and page information.
+
+---
+
+# 🧪 Testing
 
 The project includes tests for:
 
 * Document loading
-* Text chunking
+* Document chunking
 * Embedding generation
 * Vector store functionality
+* Retrieval
 
-Run the tests using:
+Run the tests with:
 
-```powershell
+```bash
 pytest
 ```
 
-## 🔐 Privacy
+---
 
-The application is designed to run locally.
+# 🔐 Privacy
 
-Documents are processed on the local machine and the LLM is accessed through Ollama.
+The project is designed to use a **local LLM through Ollama**.
 
-PDF documents and generated vector databases are excluded from the Git repository using `.gitignore`.
+Documents and FAISS indexes are stored locally and are not included in the GitHub repository.
 
-## 📌 Future Improvements
+PDF files placed in:
 
-* Better document metadata filtering
-* Conversation memory
-* Improved retrieval and reranking
-* Support for additional document formats
-* Authentication and user management
+```text
+data/documents/
+```
+
+are excluded from Git tracking.
+
+---
+
+# 📌 Current Project Capabilities
+
+The application currently supports:
+
+* Multiple PDF documents
+* PDF text extraction
+* Document chunking
+* Semantic embeddings
+* FAISS similarity search
+* Local LLM generation
+* Source document identification
+* Page-level source information
+* Streamlit UI
+* Chat history
+* Clear Chat
+* Out-of-document fallback responses
+
+For example, when information cannot be found in the documents, the system responds:
+
+```text
+I could not find enough information in the document.
+```
+
+---
+
+# 🔮 Future Improvements
+
+Possible future improvements include:
+
+* Better document filtering
+* Improved retrieval ranking
+* Metadata filtering
+* Hybrid search
+* Conversation-aware retrieval
+* Document deletion
+* Document management UI
+* Authentication
 * Cloud deployment
-* Advanced document citation
-* Hybrid keyword and semantic search
+* Azure integration
+* Advanced RAG techniques
+* Improved evaluation and monitoring
 
-## 👩‍💻 Author
+---
+
+# 👨‍💻 Author
 
 **Ashish Kumar**
 
 GitHub:
+
 https://github.com/ashishkumarb2315-lab
