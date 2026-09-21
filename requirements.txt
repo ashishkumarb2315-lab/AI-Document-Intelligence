@@ -1,0 +1,10 @@
+streamlit
+pymupdf
+langchain-text-splitters
+sentence-transformers
+faiss-cpu
+numpy
+torch==2.5.1
+torchvision==0.20.1
+scikit-learn==1.5.2
+ollama
