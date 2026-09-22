@@ -4,7 +4,7 @@ from google import genai
 
 
 OLLAMA_MODEL = "llama3.2:3b"
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-3.6-flash"
 
 
 def generate_answer(question, context):
