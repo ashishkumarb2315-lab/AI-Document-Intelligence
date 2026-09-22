@@ -2,7 +2,9 @@
 
 An AI-powered **Retrieval-Augmented Generation (RAG)** application that allows users to upload PDF documents and ask questions about their content.
 
-The application extracts text from PDFs, splits the content into chunks, generates embeddings, stores them in a FAISS vector database, retrieves relevant information, and uses a local LLM through Ollama to generate answers.
+The application extracts text from PDFs, splits the content into chunks, generates embeddings, stores them in a FAISS vector database, retrieves relevant information, and uses an LLM to generate document-grounded answers.
+
+The application supports **Gemini Cloud LLM for deployment** and **Ollama for local LLM usage**.
 
 ---
 
@@ -14,13 +16,15 @@ The application extracts text from PDFs, splits the content into chunks, generat
 * ✂️ Split documents into smaller chunks
 * 🧠 Generate text embeddings using Sentence Transformers
 * ⚡ Store and search embeddings using FAISS
-* 🤖 Generate answers using a local LLM with Ollama
+* 🤖 Generate answers using Gemini Cloud LLM
+* 🖥️ Use Ollama for local LLM generation
 * 💬 Interactive Streamlit interface
 * 📝 Chat history
 * 🧹 Clear Chat functionality
 * 📑 Display source document and page numbers
 * 🛡️ Answer only using information available in the documents
 * ❌ Return a fallback message when information is not available
+* ☁️ Deployable on Streamlit Community Cloud
 
 ---
 
@@ -54,8 +58,14 @@ Similarity Search
 Relevant Document Chunks
       │
       ▼
-Ollama LLM
-      │
+LLM
+ ┌────┴─────┐
+ │          │
+ ▼          ▼
+Ollama    Gemini
+Local     Cloud
+ │          │
+ └────┬─────┘
       ▼
 Generated Answer
       │
@@ -77,6 +87,8 @@ Streamlit UI
 * PyTorch
 * Ollama
 * Llama 3.2 3B
+* Google Gemini API
+* Google GenAI SDK
 
 ---
 
@@ -133,7 +145,7 @@ cd AI-Document-Intelligence
 
 This project requires **Python 3.11.x**.
 
-Python 3.11 is recommended because the project uses **PyTorch 2.5.1**, which is compatible with this Python version.
+Python 3.11 is recommended because the project uses PyTorch 2.5.1 and the current dependency configuration is tested with Python 3.11.
 
 Python 3.14 is not supported by the current dependency configuration.
 
@@ -175,11 +187,11 @@ python -m pip install -r requirements.txt
 
 ---
 
-# 🤖 Ollama Setup
+# 🤖 Local Ollama Setup
 
-This project uses Ollama to run the local LLM.
+For local development, the application can use Ollama with the Llama 3.2 3B model.
 
-Install Ollama on your system and make sure it is running.
+Install Ollama and make sure it is running.
 
 Then download the required model:
 
@@ -198,6 +210,24 @@ You should see:
 ```text
 llama3.2:3b
 ```
+
+---
+
+# 🔐 Gemini Cloud Setup
+
+For Streamlit Cloud deployment, the application uses the Google Gemini API.
+
+Create a Gemini API key and configure it as a Streamlit secret.
+
+Use the following secret name:
+
+```text
+GEMINI_API_KEY
+```
+
+Do not commit the API key to GitHub.
+
+The application checks for `GEMINI_API_KEY` and uses Gemini when the key is available.
 
 ---
 
@@ -271,9 +301,38 @@ You can then:
 
 ---
 
+# ☁️ Streamlit Cloud Deployment
+
+The application can be deployed using Streamlit Community Cloud.
+
+### Deployment steps
+
+1. Push the project to GitHub.
+2. Open Streamlit Community Cloud.
+3. Create a new application.
+4. Select the GitHub repository.
+5. Select the `main` branch.
+6. Set the main file to:
+
+```text
+streamlit_app.py
+```
+
+7. Configure the application secret:
+
+```toml
+GEMINI_API_KEY = "your-api-key"
+```
+
+8. Deploy the application.
+
+The deployed application uses Gemini for cloud-based answer generation.
+
+---
+
 # 💡 Example Questions
 
-For a machine learning document:
+### Machine Learning
 
 ```text
 What are the types of machine learning?
@@ -287,7 +346,7 @@ What is supervised learning?
 What is the difference between supervised and unsupervised learning?
 ```
 
-For a database document:
+### Database
 
 ```text
 What is a database management system?
@@ -335,13 +394,23 @@ FAISS searches for the most relevant document chunks.
 
 ### Step 7 — Answer Generation
 
-The retrieved context is provided to the local:
+The retrieved document context is provided to the configured LLM.
+
+For local execution, the application can use:
 
 ```text
 llama3.2:3b
 ```
 
-model through Ollama.
+through Ollama.
+
+For cloud deployment, the application uses:
+
+```text
+Gemini
+```
+
+through the Google GenAI SDK.
 
 ### Step 8 — Response
 
@@ -365,13 +434,29 @@ Run the tests with:
 pytest
 ```
 
+The application has also been tested with:
+
+* In-document questions
+* Out-of-document questions
+* Multiple PDF documents
+* Source document identification
+* Page-level source information
+
+When information cannot be found in the documents, the system responds:
+
+```text
+I could not find enough information in the document.
+```
+
 ---
 
 # 🔐 Privacy
 
-The project is designed to use a **local LLM through Ollama**.
+The project supports local document processing and local LLM usage through Ollama.
 
-Documents and FAISS indexes are stored locally and are not included in the GitHub repository.
+For cloud deployment, Gemini is used for answer generation.
+
+Documents and FAISS indexes are not included in the GitHub repository.
 
 PDF files placed in:
 
@@ -380,6 +465,8 @@ data/documents/
 ```
 
 are excluded from Git tracking.
+
+API keys should never be committed to the repository.
 
 ---
 
@@ -392,19 +479,15 @@ The application currently supports:
 * Document chunking
 * Semantic embeddings
 * FAISS similarity search
-* Local LLM generation
+* Local LLM generation through Ollama
+* Cloud LLM generation through Gemini
 * Source document identification
 * Page-level source information
 * Streamlit UI
 * Chat history
 * Clear Chat
 * Out-of-document fallback responses
-
-For example, when information cannot be found in the documents, the system responds:
-
-```text
-I could not find enough information in the document.
-```
+* Streamlit Cloud deployment
 
 ---
 
@@ -420,7 +503,6 @@ Possible future improvements include:
 * Document deletion
 * Document management UI
 * Authentication
-* Cloud deployment
 * Azure integration
 * Advanced RAG techniques
 * Improved evaluation and monitoring
@@ -434,3 +516,4 @@ Possible future improvements include:
 GitHub:
 
 https://github.com/ashishkumarb2315-lab
+
