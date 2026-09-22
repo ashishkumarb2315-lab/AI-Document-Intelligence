@@ -9,3 +9,4 @@ torchvision==0.20.1
 scikit-learn==1.5.2
 ollama
 openai
+google-genai

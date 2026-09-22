@@ -1,10 +1,10 @@
 import os
 import ollama
-from openai import OpenAI
+from google import genai
 
 
-MODEL_NAME = "llama3.2:3b"
-OPENAI_MODEL = "gpt-5.6-luna"
+OLLAMA_MODEL = "llama3.2:3b"
+GEMINI_MODEL = "gemini-2.5-flash"
 
 
 def generate_answer(question, context):
@@ -25,8 +25,8 @@ STRICT RULES:
 
 1. Answer only what the question asks.
 2. Use only information explicitly supported by the document context.
-3. Do not combine information from different machine learning types
-   unless the document explicitly connects them.
+3. Do not combine information from different topics unless the document
+   explicitly connects them.
 4. Do not add general knowledge.
 5. Do not guess or infer missing information.
 6. If the question asks for a definition, provide only the definition
@@ -44,23 +44,23 @@ STRICT RULES:
 ANSWER:
 """
 
-    api_key = os.getenv("OPENAI_API_KEY")
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
 
-    if api_key:
+    if gemini_api_key:
 
-        client = OpenAI(
-            api_key=api_key
+        client = genai.Client(
+            api_key=gemini_api_key
         )
 
-        response = client.responses.create(
-            model=OPENAI_MODEL,
-            input=prompt
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt
         )
 
-        return response.output_text
+        return response.text
 
     response = ollama.chat(
-        model=MODEL_NAME,
+        model=OLLAMA_MODEL,
         messages=[
             {
                 "role": "user",
