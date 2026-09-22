@@ -6,6 +6,10 @@ The application extracts text from PDFs, splits the content into chunks, generat
 
 The application supports **Gemini Cloud LLM for deployment** and **Ollama for local LLM usage**.
 
+## 🚀 Live Demo
+
+👉 [Open AI Document Intelligence](https://ai-document-intelligence-mnspnejdsvthhuxnzfwcjm.streamlit.app/)
+
 ---
 
 ## 🚀 Features
@@ -327,6 +331,10 @@ GEMINI_API_KEY = "your-api-key"
 8. Deploy the application.
 
 The deployed application uses Gemini for cloud-based answer generation.
+
+### Live Application
+
+👉 [Open AI Document Intelligence](https://ai-document-intelligence-mnspnejdsvthhuxnzfwcjm.streamlit.app/)
 
 ---
 
