@@ -4,7 +4,7 @@ from openai import OpenAI
 
 
 MODEL_NAME = "llama3.2:3b"
-OPENAI_MODEL = "gpt-5.6-mini"
+OPENAI_MODEL = "gpt-5.6-luna"
 
 
 def generate_answer(question, context):
